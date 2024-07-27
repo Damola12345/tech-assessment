@@ -1,0 +1,14 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: letsencrypt-eyot
+  namespace: prod
+spec:
+  dnsNames:
+    - toyeglobal.xx.com
+    - grafana.xx.com
+    - prometheus.xxxx.com
+  issuerRef:
+    name: letsencrypt-eyot
+    kind: ClusterIssuer
+  secretName: letsencrypt-eyot
