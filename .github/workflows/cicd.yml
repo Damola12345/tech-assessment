@@ -91,7 +91,6 @@ jobs:
 
     - uses: actions/checkout@v2
     - name: Deploy to Cluster
-      working-directory: ./toyeglobal-app
       env:
         DOCKER_USER: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
@@ -101,5 +100,7 @@ jobs:
         BRANCH: "ft/task3"
         ENVIRONMENT: prod
 
-      run: /bin/bash deploy.sh
+      run: |
+          cd toyeglobal-app
+          /bin/bash deploy.sh
 
