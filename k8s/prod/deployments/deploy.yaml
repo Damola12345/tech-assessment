@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ##DEPLOYMENT_NAME##
+  name: toyeglobal-app-prod
   namespace: prod
 spec:
   replicas: 3

@@ -2,8 +2,6 @@ name: k8s-deploy
 on:
   push:
     branches: 
-
-      
       - master
 
 jobs:
