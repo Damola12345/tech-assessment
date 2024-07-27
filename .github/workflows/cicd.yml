@@ -96,5 +96,5 @@ jobs:
         BRANCH: "ft/task3"
         ENVIRONMENT: prod
 
-      run: ./deploy.sh
+      run: /bin/bash deploy.sh
 
