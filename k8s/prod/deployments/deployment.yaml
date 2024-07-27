@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: toyeglobal-app-prod
+  namespace: prod
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: toyeglobal-app
+  template:
+    metadata:
+      labels:
+        app: toyeglobal-app
+    spec:
+      tolerations:
+        - effect: NoSchedule
+          operator: Equal
+          key: owner
+          value: red  
+      containers:
+      - name: toyeglobal-app
+        image: ##IMAGE_URL##
+        ports:
+        - containerPort: 3000
