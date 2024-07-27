@@ -2,7 +2,7 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [ ft/task2 ]
   # Uncomment the following lines if you want to run the workflow on pull requests to the main branch and tag pushes
   # pull_request:
   #   branches: [ main ]
@@ -80,7 +80,7 @@ jobs:
         DOCKERHUB_REPO: damola12345
         APP_NAME: toyeglobal
         KUBECONFIG: ${{ secrets.KUBECONFIG }}
-        BRANCH: "ft/master"
+        BRANCH: "ft/task2"
         ENVIRONMENT: prod
 
       run: |
