@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: toyeglobal-app
+  name: toyeglobal-app-prod
   namespace: prod
 spec:
   replicas: 3
@@ -20,6 +20,6 @@ spec:
           value: red  
       containers:
       - name: toyeglobal-app
-        image: damola12345/toyeglobal-app:latest
+        image: ##IMAGE_URL##
         ports:
         - containerPort: 3000
