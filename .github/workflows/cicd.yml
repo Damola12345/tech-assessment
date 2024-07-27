@@ -77,8 +77,8 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: List files in toyeglobal-app directory
-      run: ls -la ./toyeglobal-app    
+    - name: Set permissions for deploy.sh
+      run: chmod +x ./toyeglobal-app/deploy.sh  
 
     - uses: actions/checkout@v2
     - name: Deploy to Cluster
@@ -92,5 +92,5 @@ jobs:
         BRANCH: "ft/task3"
         ENVIRONMENT: prod
 
-      run: ./toyeglobal-app/deploy.sh
+      run: ./deploy.sh
 
