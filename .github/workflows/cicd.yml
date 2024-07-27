@@ -2,7 +2,7 @@ name: Docker Image CI
 
 on:
   push:
-    # branches: [ ft/task3 ]
+    branches: [ ft/task3 ]
   # Uncomment the following lines if you want to run the workflow on pull requests to the main branch and tag pushes
   # pull_request:
   #   branches: [ main ]
@@ -78,43 +78,17 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
 
 
-    - name: Download kubectl
-      run: |
-        curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-        chmod +x kubectl
-        mv kubectl /usr/local/bin/
-
-    - name: Set up kubectl
-      run: echo "${{ secrets.KUBECONFIG }}" > .kubeconfig
+    - uses: actions/checkout@v2
+    - name: Deploy to Cluster
+      working-directory: ./toyeglobal-app
       env:
+        DOCKER_USER: ${{ secrets.DOCKER_USERNAME }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        DOCKERHUB_REPO: damola12345
+        APP_NAME: toyeglobal
         KUBECONFIG: ${{ secrets.KUBECONFIG }}
+        BRANCH: "ft/task3"
+        ENVIRONMENT: prod
 
-    - name: Print directory structure for debugging
-      run: |
-        echo "Printing directory structure:"
-        ls -la
-        ls -la toyeglobal-app
-        ls -la toyeglobal-app/k8s
-        ls -la toyeglobal-app/k8s/prod
-
-    - name: Replace image URL in deployment manifests
-      run: |
-        export IMAGE_TAG=$(git rev-parse --short HEAD)-$(date +%F-%H-%M)
-        export IMG_NAME="${{ secrets.DOCKERHUB_REPO }}/toyeglobal:${IMAGE_TAG}"
-        sed -i "s|##IMAGE_URL##|${IMG_NAME}|" toyeglobal-app/k8s/prod/deployments/*.yaml
-
-    - name: Apply Kubernetes manifests
-      run: |
-        for directory in ingresses services deployments
-        do
-          if [ $(ls -1 toyeglobal-app/k8s/prod/$directory/*.yaml 2>/dev/null | wc -l) != 0 ]
-          then
-            kubectl apply -f toyeglobal-app/k8s/prod/$directory -n prod
-          fi
-        done
-
-    - name: Wait for deployment to complete
-      run: |
-        kubectl -n prod rollout status deployment toyeglobal-app-prod -w --timeout=5m
-
+      run: ./deploy.sh
 
