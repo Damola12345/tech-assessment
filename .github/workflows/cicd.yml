@@ -77,20 +77,12 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: Print directory structure for debugging
+
+    - name: Download kubectl
       run: |
-        echo "Printing directory structure:"
-        ls -la
-        ls -la toyeglobal-app
-        ls -la toyeglobal-app/k8s
-        ls -la toyeglobal-app/k8s/prod
-
-
-        - name: Download kubectl
-        run: |
-          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-          chmod +x kubectl
-          mv kubectl /usr/local/bin/
+        curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+        chmod +x kubectl
+        mv kubectl /usr/local/bin/
 
     - name: Set up kubectl
       run: echo "${{ secrets.KUBECONFIG }}" > .kubeconfig
