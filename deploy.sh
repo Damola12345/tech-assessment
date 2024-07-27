@@ -1,3 +1,14 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# set env variables
+export IMAGE_TAG=$(git rev-parse --short HEAD)-$(date +%F-%H-%M)
+export K8S_DEPLOYMENT_toyeglobal="${ENVIRONMENT}"
+export K8S_DEPLOYMENT_toyeglobal="toyeglobal-app${ENVIRONMENT}"
+export IMG_NAME="${DOCKERHUB_REPO}/${APP_NAME}:${IMAGE_TAG}"
+export NAMESPACE="${ENVIRONMENT}"
+
 echo "##### Starting <> build..."
 docker build -t ${IMG_NAME} .
 docker push ${IMG_NAME}
