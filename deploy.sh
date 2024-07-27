@@ -26,7 +26,7 @@ export KUBECONFIG=.kubeconfig
 echo "##### Starting  deploy..."
 
 # # replacing/updating the deployment image #
-sed -i "s|##IMAGE_URL##|${IMG_NAME}|" /k8s/$ENVIRONMENT/deployments/*.yaml
+sed -i "s|##IMAGE_URL##|${IMG_NAME}|" k8s/$ENVIRONMENT/deployments/*.yaml
 
 for directory in ingresses services deployments
 do
