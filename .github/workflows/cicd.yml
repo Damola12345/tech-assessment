@@ -80,8 +80,13 @@ jobs:
     - name: Set permissions for deploy.sh
       run: chmod +x ./toyeglobal-app/deploy.sh  
 
-    - name: Verify permissions
-      run: ls -la ./toyeglobal-app
+    - name: Print directory structure for debugging
+      run: |
+        echo "Printing directory structure:"
+        ls -la
+        ls -la toyeglobal-app
+        ls -la toyeglobal-app/k8s
+        ls -la toyeglobal-app/k8s/prod
 
 
     - uses: actions/checkout@v2
