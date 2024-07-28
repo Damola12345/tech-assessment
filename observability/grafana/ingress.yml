@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: grafana
+  namespace: prod
+  annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-eyot
+      # acme.cert-manager.io/http01-edit-in-place: 'true'
+      # nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+      # nginx.ingress.kubernetes.io/rewrite-target: /
+      kubernetes.io/ingress.class: nginx
+spec:
+  ingressClassName: nginx 
+  rules:
+  - host: grafana.xxxx.com
+    http:
+      paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: grafana 
+              port:
+               number: 80
+  tls:
+    - hosts:
+        - grafana.xxx.com
+      secretName: letsencrypt-eyot

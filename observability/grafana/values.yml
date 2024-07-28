@@ -1,0 +1,72 @@
+
+replicas: 2
+
+image:
+  repository: docker.io/grafana/grafana
+  tag: "10.0.2"
+
+service:
+  enabled: true
+  type: ClusterIP
+  port: 80
+  targetPort: 3000
+  annotations: {}
+  labels: {}
+  portName: service
+
+
+ingress:
+  enabled: true
+
+
+
+admin:
+  existingSecret: "grafana-admin"
+  userKey: admin-user
+  passwordKey: admin-password
+
+# grafana.ini:
+#   server:
+#     root_url: https://grafana.grocedy.com
+#   users:
+#     allow_sign_up: false
+#     auto_assign_org_role: admin
+#   auth.anonymous:
+#     enabled: false
+#   auth:
+#     disable_login_form: false
+#   auth.basic:
+#     enabled: true
+#   auth.github:
+#     enabled: false
+#   auth.google:
+#     name: Google
+#     enabled: false
+
+resources:
+    limits:
+      cpu: 1000m
+      memory: 2000Mi
+    requests:
+      cpu: 500m
+      memory: 1500Mi
+
+
+persistence:
+  type: pvc
+  enabled: true
+  storageClassName: default
+  accessModes:
+    - ReadWriteOnce
+  size: 10Gi
+  finalizers:
+    - kubernetes.io/pvc-protection
+
+tolerations:
+- effect: NoSchedule
+  key: owner
+  operator: Equal
+  value: red
+
+
+

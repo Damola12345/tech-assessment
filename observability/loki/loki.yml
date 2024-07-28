@@ -1,0 +1,47 @@
+fluent-bit:
+  enabled: false
+grafana:
+  enabled: false
+loki:
+  config:
+    schema_config:
+      configs:
+      - from: "2020-10-24"
+        index:
+          period: 24h
+          prefix: loki_index_
+        object_store: aws
+        schema: v11
+        store: boltdb-shipper
+    storage_config:
+      aws:
+        bucketnames: loki-toye-metrics
+        endpoint: s3.us-east-1.amazonaws.com
+        region: us-east-1
+        s3forcepathstyle: true
+      boltdb_shipper:
+        cache_ttl: 24h
+        shared_store: aws
+  enabled: true
+  tolerations:
+    - key: "owner"
+      operator: "Equal"
+      value: "red"
+      effect: "NoSchedule"
+
+  persistence:
+    accessModes:
+    - ReadWriteOnce
+    enabled: true
+    size: 10Gi
+    storageClass: "default"
+prometheus:
+  enabled: false
+promtail:
+  config:
+    clients:
+    - url: http://{{ .Release.Name }}:3100/loki/api/v1/push
+    logLevel: info
+    serverPort: 3101
+  enabled: false
+
