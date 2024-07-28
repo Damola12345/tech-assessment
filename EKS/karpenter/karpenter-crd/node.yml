@@ -1,0 +1,22 @@
+apiVersion: karpenter.k8s.aws/v1alpha1
+kind: AWSNodeTemplate
+metadata:
+  name: default
+spec:
+  securityGroupSelector:
+    karpenter.sh/discovery: Globaltoye-prod
+  subnetSelector:
+    karpenter.sh/discovery: "true"
+  metadataOptions:
+    httpEndpoint: enabled
+    httpProtocolIPv6: disabled
+    httpPutResponseHopLimit: 2
+    httpTokens: optional # Set to 'required' if you want to use IMDSv2
+  blockDeviceMappings:
+    # EC2 root volume configuraions
+    - deviceName: /dev/xvda # root device volume /dev/xvda
+      ebs:
+        volumeSize: 20Gi
+        volumeType: gp2
+        encrypted: true
+        deleteOnTermination: true

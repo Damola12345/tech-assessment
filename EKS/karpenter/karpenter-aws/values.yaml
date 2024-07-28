@@ -1,0 +1,144 @@
+karpenter:
+
+  serviceAccount:
+    # -- Specifies if a ServiceAccount should be created.
+    create: true
+    # -- The name of the ServiceAccount to use.
+    # If not set and create is true, a name is generated using the fullname template.
+    name: ""
+    # -- Additional annotations for the ServiceAccount.
+    annotations:
+      eks.amazonaws.com/role-arn: arn:aws:iam::xxxxx:role/karpenter-controller-Globaltoye-prod
+  # -- Number of replicas.
+  replicas: 1
+  # -- The number of old ReplicaSets to retain to allow rollback.
+  revisionHistoryLimit: 10
+  # -- Strategy for updating the pod.
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 1
+  # -- Additional labels for the pod.
+  podLabels: {}
+  # -- Additional annotations for the pod.
+  podAnnotations: {}
+  podDisruptionBudget:
+    name: karpenter
+    maxUnavailable: 1
+
+   # Specify the node labels where Karpenter should schedule its pods
+  nodeSelector:
+  owner:
+    # - blue
+    - red
+  # -- Tolerations to allow the pod to be scheduled to nodes with taints.
+
+  # affinity: ""
+
+  # tolerations:
+  #   - operator: "Exists"
+  #   - key: CriticalAddonsOnly
+  #     operator: Exists
+  #   - key: "kuberentes.io/arch"
+  #     operator: "Equal"
+  #     value: "amd64"
+
+  controller:
+
+    # -- Additional environment variables for the controller pod.
+    env: []
+    # - name: AWS_REGION
+    #   value: eu-west-1
+
+    # -- Resources for the controller pod.
+    resources:
+      requests:
+        cpu: 1
+        memory: 1Gi
+      limits:
+        cpu: 1
+        memory: 1Gi
+    # -- Controller outputPaths - default to stdout only
+    outputPaths:
+      - stdout
+    # -- Controller errorOutputPaths - default to stderr only
+    errorOutputPaths:
+      - stderr
+
+    metrics:
+      # -- The container port to use for metrics.
+      port: 8080
+    healthProbe:
+      # -- The container port to use for http health probe.
+      port: 8081
+  webhook:
+    logLevel: error
+    # -- The container port to use for the webhook.
+    port: 8443
+  # -- Global log level
+  logLevel: debug
+  # -- Gloabl log encoding
+  logEncoding: console
+  # -- Global Settings to configure Karpenter
+  settings:
+    featureGates:
+      driftEnabled: true
+    # -- The maximum length of a batch window. The longer this is, the more pods we can consider for provisioning at one
+    # time which usually results in fewer but larger nodes.
+    batchMaxDuration: 10s
+    # -- The maximum amount of time with no new ending pods that if exceeded ends the current batching window. If pods arrive
+    # faster than this time, the batching window will be extended up to the maxDuration. If they arrive slower, the pods
+    # will be batched separately.
+    batchIdleDuration: 1s
+    # -- AWS-specific configuration values
+    aws:
+      clusterName: "Globaltoye-prod"
+      clusterEndpoint: "https://xxxxx.gr7.us-east-1.eks.amazonaws.com"
+      defaultInstanceProfile: "karpenter-node-Globaltoye-prod" 
+      # -- The node naming convention (either "ip-name" or "resource-name")
+      nodeNameConvention: "ip-name"
+      # -- The VM memory overhead as a percent that will be subtracted from the total memory for all instance types
+      vmMemoryOverheadPercent: 0.075
+      # -- interruptionQueueName is currently in ALPHA and is disabled by default. Enabling interruption handling may
+      # require additional permissions on the controller service account. Additional permissions are outlined in the docs.
+      interruptionQueueName: ""
+      # -- The global tags to use on all AWS infrastructure resources (launch templates, instances, etc.) across node templates
+      tags:
+
+# provisioner:
+#   # Karpenter provides the ability to specify a few additional Kubelet args.
+#   # These are all optional and provide support for additional customization and use cases.
+#   kubeletConfiguration:
+#     clusterDNS: ["172.20.0.10"]
+#     containerRuntime: containerd
+
+#   # Resource limits constrain the total size of the cluster.
+#   # Limits prevent Karpenter from creating new instances once the limit is exceeded.
+#   limits:
+#     resources:
+#       cpu: "1000"
+#       memory: 1000Gi
+
+#   # Enables consolidation which attempts to reduce cluster cost by both removing un-needed nodes and down-sizing those
+#   # that can't be removed.  Mutually exclusive with the ttlSecondsAfterEmpty parameter.
+#   consolidation:
+#     enabled: true
+
+#   # If omitted, the feature is disabled and nodes will never expire.  If set to less time than it requires for a node
+#   # to become ready, the node may expire before any pods successfully start.
+#   ttlSecondsUntilExpired: 864000 # 30 Days = 60 * 60 * 24 * 30 Seconds;
+
+#   # If omitted, the feature is disabled, nodes will never scale down due to low utilization
+#   ttlSecondsAfterEmpty: null
+
+# nodeTemplate:
+
+#   blockDeviceMappings:
+#     # EC2 root volume configuraions
+#     - deviceName: /dev/xvda # root device volume /dev/xvda
+#       ebs:
+#         volumeSize: 100Gi
+#         volumeType: gp3
+#         iops: 3000
+#         encrypted: true
+#         deleteOnTermination: true
+#         throughput: 125

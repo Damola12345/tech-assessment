@@ -1,0 +1,80 @@
+apiVersion: karpenter.sh/v1alpha5
+kind: Provisioner
+metadata:
+  name: red
+spec:
+  # References cloud provider-specific custom resource, see your cloud provider specific documentation
+  providerRef:
+    name: default
+
+  # Provisioned nodes will have these taints
+  # Taints may prevent pods from scheduling if they are not tolerated by the pod.
+  # taints:
+  #   - key: example.com/special-taint
+  #     effect: NoSchedule
+  taints:
+    - key: owner
+      value: red
+      effect: NoSchedule
+
+  # Provisioned nodes will have these taints, but pods do not need to tolerate these taints to be provisioned by this
+  # provisioner. These taints are expected to be temporary and some other entity (e.g. a DaemonSet) is responsible for
+  # removing the taint after it has finished initializing the node.
+  # startupTaints:
+  #   - key: example.com/another-taint
+  #     effect: NoSchedule
+
+  # Labels are arbitrary key-values that are applied to all nodes
+  labels:
+    owner: red
+    kubernetes.io/os: linux
+  
+  requirements:
+    # - key: "karpenter.k8s.aws/instance-category"
+    #   operator: In
+    #   values: ["m"]
+    # - key: "karpenter.k8s.aws/instance-family"
+    #   operator: In
+    #   values: ["m5"]
+    - key: "karpenter.k8s.aws/instance-cpu"
+      operator: In
+      values: ["2","4"]
+    # - key: "karpenter.k8s.aws/instance-hypervisor"
+    #   operator: In
+    #   values: ["nitro"]
+    - key: "topology.kubernetes.io/zone"
+      operator: In
+      values: ["us-east-1a", "us-east-1b"]
+    - key: "kubernetes.io/arch"
+      operator: In
+      values: ["amd64"]
+    - key: "karpenter.sh/capacity-type" # If not included, the webhook for the AWS cloud provider will default to on-demand
+      operator: In
+      values: ["on-demand"]
+    # - key: node.kubernetes.io/instance-type
+    #   operator: In
+    #   values: ["t2.xlarge"]
+
+  # Karpenter provides the ability to specify a few additional Kubelet args.
+  # These are all optional and provide support for additional customization and use cases.
+  kubeletConfiguration:
+    clusterDNS: ["1xx.xx.0.1x"]
+    containerRuntime: containerd
+    
+  limits:
+    resources:
+      cpu: "1000"
+      memory: 1000Gi
+
+
+  consolidation:
+    enabled: true
+
+
+  ttlSecondsUntilExpired: 864000 # 30 Days = 60 * 60 * 24 * 30 Seconds;
+
+  # If omitted, the feature is disabled, nodes will never scale down due to low utilization
+  ttlSecondsAfterEmpty: null
+
+
+  weight: 10

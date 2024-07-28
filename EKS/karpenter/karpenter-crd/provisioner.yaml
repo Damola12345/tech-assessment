@@ -1,0 +1,69 @@
+apiVersion: karpenter.sh/v1alpha5
+kind: Provisioner
+metadata:
+  name: globaltoye
+spec:
+  # References cloud provider-specific custom resource, see your cloud provider specific documentation
+  providerRef:
+    name: default
+
+  labels:
+    owner: red
+    kubernetes.io/os: linux
+
+  requirements:
+    # - key: "karpenter.k8s.aws/instance-category"
+    #   operator: In
+    #   values: ["m"]
+    # - key: "karpenter.k8s.aws/instance-family"
+    #   operator: In
+    #   values: ["m5"]
+    - key: "karpenter.k8s.aws/instance-cpu"
+      operator: In
+      values: ["2","4"]
+    # - key: "karpenter.k8s.aws/instance-hypervisor"
+    #   operator: In
+    #   values: ["nitro"]
+    - key: "topology.kubernetes.io/zone"
+      operator: In
+      values: ["us-east-1a", "us-east-1b"]
+    - key: "kubernetes.io/arch"
+      operator: In
+      values: ["amd64"]
+    - key: "karpenter.sh/capacity-type" # If not included, the webhook for the AWS cloud provider will default to on-demand
+      operator: In
+      values: ["on-demand"]
+    # - key: node.kubernetes.io/instance-type
+    #   operator: In
+    #   values: ["t2.medium"]
+
+  # Karpenter provides the ability to specify a few additional Kubelet args.
+  # These are all optional and provide support for additional customization and use cases.
+  kubeletConfiguration:
+    clusterDNS: ["1xx.xx.0.1x"]
+    containerRuntime: containerd
+    
+
+  # Resource limits constrain the total size of the cluster.
+  # Limits prevent Karpenter from creating new instances once the limit is exceeded.
+  limits:
+    resources:
+      cpu: "1000"
+      memory: 1000Gi
+
+  # Enables consolidation which attempts to reduce cluster cost by both removing un-needed nodes and down-sizing those
+  # that can't be removed.  Mutually exclusive with the ttlSecondsAfterEmpty parameter.
+  consolidation:
+    enabled: true
+
+  # If omitted, the feature is disabled and nodes will never expire.  If set to less time than it requires for a node
+  # to become ready, the node may expire before any pods successfully start.
+  ttlSecondsUntilExpired: 864000 # 30 Days = 60 * 60 * 24 * 30 Seconds;
+
+  # If omitted, the feature is disabled, nodes will never scale down due to low utilization
+  ttlSecondsAfterEmpty: null
+
+  # Priority given to the provisioner when the scheduler considers which provisioner
+  # to select. Higher weights indicate higher priority when comparing provisioners.
+  # Specifying no weight is equivalent to specifying a weight of 0.
+  weight: 10
