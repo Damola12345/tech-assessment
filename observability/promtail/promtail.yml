@@ -110,8 +110,8 @@ daemonset:
 deployment:
   enabled: false
   replicaCount: 1
-# tolerations:
-# - effect: NoSchedule
-#   key: owner
-#   operator: Equal
-#   value: red
+tolerations:
+- effect: NoSchedule
+  key: owner
+  operator: Equal
+  value: red
