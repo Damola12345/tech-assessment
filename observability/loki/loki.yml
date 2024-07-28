@@ -23,11 +23,11 @@ loki:
         cache_ttl: 24h
         shared_store: aws
   enabled: true
-  # tolerations:
-  #   - key: "owner"
-  #     operator: "Equal"
-  #     value: "red"
-  #     effect: "NoSchedule"
+  tolerations:
+    - key: "owner"
+      operator: "Equal"
+      value: "red"
+      effect: "NoSchedule"
 
   persistence:
     accessModes:
